@@ -9,8 +9,8 @@ namespace APIFinalProj.Models
         public string Code { get; set; }
 
         [Required]
-        public string Duration { get; set; }
+        public int Duration { get; set; }
 
-        public ICollection<Enrollment> Enrollments { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
