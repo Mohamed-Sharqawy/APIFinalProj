@@ -1,6 +1,7 @@
-
+using APIFinalProj.UOF;
 using APIFinalProj.Context;
 using APIFinalProj.Models;
+using APIFinalProj.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,17 @@ namespace APIFinalProj
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddCors(
+                options =>
+                {
+                    options.AddPolicy("AllowOrigin",
+                        p =>
+                        {
+                            p.AllowAnyOrigin();
+                            p.AllowAnyHeader();
+                            p.AllowAnyMethod();
+                        });
+                });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -30,6 +41,9 @@ namespace APIFinalProj
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
+            //builder.Services.AddScoped<GenericRepository<Course>>();
+            //builder.Services.AddScoped<GenericRepository<Student>>();
+            builder.Services.AddScoped<APIFinalProj.UOF.UnitOfWork>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

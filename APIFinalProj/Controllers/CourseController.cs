@@ -54,7 +54,7 @@ namespace APIFinalProj.Controllers
         [HttpGet("{name}")]
         public IActionResult GetByName(string name)
         {
-            var course = unit.CrsRepo.GetByName(c => c.Name == name);
+            var course = unit.CrsRepo.GetByName(c => c.Name.Contains(name));
             if (course == null)
                 return NotFound();
             else return Ok(course);
@@ -73,6 +73,7 @@ namespace APIFinalProj.Controllers
                     Name = dto.Name,
                     Duration = dto.Duration ?? 0
                 };
+                course.Code = $"CRS{course.Name}{DateTime.Now:MMddyy}".Substring(0, 8);
 
                 unit.CrsRepo.Add(course);
                 unit.CrsRepo.Save();

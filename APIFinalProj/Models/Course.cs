@@ -6,7 +6,7 @@ namespace APIFinalProj.Models
     {
         [Required]
         [StringLength(10)]
-        public string Code { get; set; }
+        public string Code { get; set; } 
 
         [Required]
         public int Duration { get; set; }
