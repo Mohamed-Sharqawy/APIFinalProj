@@ -9,13 +9,21 @@ namespace APIFinalProj.UOF
         AppDbContext context;
         GenericRepository<Course> CourseRepo;
         GenericRepository<Student> StudentRepo;
-
+        GenericRepository<Enrollment> EnrollemtnRepo;
 
         public UnitOfWork(AppDbContext context)
         {
             this.context = context;
         }
-
+        public GenericRepository<Enrollment> EnrRepo
+        {
+            get
+            {
+                if (EnrollemtnRepo == null)
+                    EnrollemtnRepo = new GenericRepository<Enrollment>(context);
+                return EnrollemtnRepo;
+            }
+        }
         public GenericRepository<Course> CrsRepo
         {
             get

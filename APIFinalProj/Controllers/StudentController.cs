@@ -1,8 +1,10 @@
 ﻿using APIFinalProj.DTOs;
 using APIFinalProj.Models;
 using APIFinalProj.UOF;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace APIFinalProj.Controllers
 {
@@ -110,5 +112,47 @@ namespace APIFinalProj.Controllers
                 unit.StdRepo.Save();
                 return Ok(oldcrs);
             }
+
+
+        [HttpPost("enroll")]
+        [Authorize]
+        public IActionResult EnrollInCourse([FromBody] EnrollmentDto dto)
+        {
+            var studentIdClaim = User.FindFirstValue("StudentId");
+
+            if (string.IsNullOrWhiteSpace(studentIdClaim) || !int.TryParse(studentIdClaim, out int studentId))
+                return BadRequest(new { Message = "Student ID not found in token" });
+
+            var student = unit.StdRepo.GetById(studentId);
+            if (student == null)
+                return NotFound(new { Message = "Student Not Found" });
+
+            var course = unit.CrsRepo.GetById(dto.CourseId);
+            if (course == null)
+                return NotFound(new { Message = "Course Not Found" });
+
+            var existingEnrollment = unit.EnrRepo.GetAll()
+                .FirstOrDefault(e => e.StudentId == studentId && e.CourseId == dto.CourseId);
+
+            if (existingEnrollment != null)
+                return BadRequest(new { Message = "Already enrolled in this course" });
+
+            var enrollment = new Enrollment
+            {
+                StudentId = studentId,
+                CourseId = dto.CourseId,
+                EnrollmentDate = DateTime.UtcNow,
+                Grade = null // Grade not assigned yet
+            };
+
+            unit.EnrRepo.Add(enrollment);
+            unit.EnrRepo.Save();
+
+            return Ok(new { Message = "Enrolled successfully", Enrollment = enrollment });
+        }
+
+        
+
+
         }
 }
